@@ -1,0 +1,164 @@
+--Project 3 RDS to SQL
+--Group 6
+
+
+
+-- creating the tables
+
+CREATE TABLE DIRECTOR (
+    director_id NUMBER(7),
+    name VARCHAR2(50),
+    experience_years NUMBER(3),
+    nationality VARCHAR2(30)
+);
+
+CREATE TABLE MOVIE (
+    movie_id NUMBER(5),
+    title VARCHAR2(50),
+    release_year NUMBER(4),
+    alt_title VARCHAR2(50),
+    mpaa_rating VARCHAR2(3),
+    description VARCHAR2(250),
+    runtime NUMBER(4)
+);
+
+CREATE TABLE ACTOR (
+    actor_id NUMBER(5),
+    name VARCHAR2(75),
+    date_of_birth DATE,
+    nationality VARCHAR2(75)
+);
+
+CREATE TABLE CHARACTER_t (
+    character_id NUMBER(5),
+    alignment VARCHAR2(25),
+    name VARCHAR2(50),
+    species VARCHAR2(50)
+);
+
+CREATE TABLE  PRODUCTION_COMPANY(
+    company_id NUMBER(5),
+    company_name VARCHAR2(50),
+    headquarters VARCHAR2(100)
+);
+
+CREATE TABLE  AWARD(
+    award_id NUMBER(5),
+    name VARCHAR2(50),
+    category VARCHAR2(50)
+);
+
+CREATE TABLE REVIEW (
+    movie_id NUMBER(5),
+    review_no NUMBER(6),
+    rating_score NUMBER(2,1),
+    review_title VARCHAR2(100),
+    review_text VARCHAR2(1000)
+);
+
+
+-- adding primary keys
+ALTER TABLE DIRECTOR
+ADD CONSTRAINT director_pk PRIMARY KEY (director_id);
+
+ALTER TABLE MOVIE
+ADD CONSTRAINT movie_pk PRIMARY KEY (movie_id);
+
+ALTER TABLE REVIEW
+ADD CONSTRAINT review_pk PRIMARY KEY (review_no);
+
+
+ALTER TABLE ACTOR
+ADD CONSTRAINT actor_pk PRIMARY KEY (actor_id);
+
+ALTER TABLE CHARACTER_t
+ADD CONSTRAINT character_t_pk PRIMARY KEY (character_id);
+
+ALTER TABLE PRODUCTION_COMPANY
+ADD CONSTRAINT production_company_pk PRIMARY KEY (company_id);
+
+ALTER TABLE AWARD
+ADD CONSTRAINT award_pk PRIMARY KEY (award_id);
+
+-- adding missing columns
+ALTER TABLE MOVIE
+ADD director_id NUMBER(7);
+
+ALTER TABLE MOVIE
+ADD company_id NUMBER(5);
+
+-- adding foreign keys 
+ALTER TABLE MOVIE
+ADD CONSTRAINT movie_director_fk
+FOREIGN KEY (director_id)
+REFERENCES DIRECTOR (director_id);
+
+ALTER TABLE REVIEW
+ADD CONSTRAINT review_movie_fk
+FOREIGN KEY (movie_id)
+REFERENCES MOVIE (movie_id);
+
+ALTER TABLE MOVIE
+ADD CONSTRAINT movie_company_fk
+FOREIGN KEY (company_id)
+REFERENCES PRODUCTION_COMPANY (company_id);
+
+-- bridge tables 
+
+CREATE TABLE ACTOR_MOVIE (
+    actor_id NUMBER(5),
+    movie_id NUMBER(5)
+);
+
+ALTER TABLE ACTOR_MOVIE
+ADD CONSTRAINT actor_movie_pk PRIMARY KEY (actor_id, movie_id);
+
+ALTER TABLE ACTOR_MOVIE
+ADD CONSTRAINT actor_movie_actor_fk
+FOREIGN KEY (actor_id)
+REFERENCES ACTOR (actor_id);
+
+ALTER TABLE ACTOR_MOVIE
+ADD CONSTRAINT actor_movie_movie_fk
+FOREIGN KEY (movie_id)
+REFERENCES MOVIE (movie_id);
+
+CREATE TABLE ACTOR_CHARACTER (
+    actor_id NUMBER(5),
+    character_id NUMBER(5)
+);
+
+ALTER TABLE ACTOR_CHARACTER
+ADD CONSTRAINT actor_character_pk PRIMARY KEY (actor_id, character_id);
+
+ALTER TABLE ACTOR_CHARACTER
+ADD CONSTRAINT actor_character_actor_fk
+FOREIGN KEY (actor_id)
+REFERENCES ACTOR (actor_id);
+
+ALTER TABLE ACTOR_CHARACTER
+ADD CONSTRAINT actor_character_character_fk
+FOREIGN KEY (character_id)
+REFERENCES CHARACTER_t (character_id);
+
+-- null statements 
+ALTER TABLE MOVIE
+MODIFY director_id CONSTRAINT movie_director_nn NOT NULL;
+
+ALTER TABLE MOVIE
+MODIFY company_id CONSTRAINT movie_company_nn NOT NULL;
+
+ALTER TABLE REVIEW
+MODIFY movie_id CONSTRAINT review_movie_nn NOT NULL;
+
+
+-- run
+DESCRIBE DIRECTOR;
+DESCRIBE MOVIE;
+DESCRIBE ACTOR;
+DESCRIBE CHARACTER_t;
+DESCRIBE PRODUCTION_COMPANY;
+DESCRIBE AWARD;
+DESCRIBE REVIEW;
+DESCRIBE ACTOR_MOVIE;
+DESCRIBE ACTOR_CHARACTER;
